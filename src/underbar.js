@@ -175,6 +175,10 @@
   //          No accumulator is given so the first element is used.
   _.reduce = function(collection, iterator, accumulator) {
 
+      // accumulator should be the return value of the previous iterator call.
+
+      var initial = 0;
+
       var initializing = arguments.length === 2;
 
       _.each(collection, function(val){
@@ -305,6 +309,14 @@
   // already computed the result for the given argument and return that value
   // instead if possible.
   _.memoize = function(func) {
+    var storage = {};
+    return function(){
+      var input = JSON.stringify(arguments);
+      if( !storage.hasOwnProperty(input) ){
+        storage[input] = func.apply(null, arguments);
+      }
+      return storage[input];
+    }
   };
 
   // Delays a function for the given number of milliseconds, and then calls
@@ -314,6 +326,10 @@
   // parameter. For example _.delay(someFunction, 500, 'a', 'b') will
   // call someFunction('a', 'b') after 500ms
   _.delay = function(func, wait) {
+    var args = Array.prototype.slice.call(arguments, 2);
+    setTimeout(function(){
+      func.apply(this, args);
+    }, wait);
   };
 
 
@@ -328,6 +344,23 @@
   // input array. For a tip on how to make a copy of an array, see:
   // http://mdn.io/Array.prototype.slice
   _.shuffle = function(array) {
+    
+    var out = array.slice();
+    var temp;
+    var currentIx = array.length - 1;
+    var swapIx;
+
+    while (currentIx) {
+      swapIx = Math.floor(Math.random() * currentIx);
+
+      currentIx -= 1;
+
+      temp = out[currentIx];
+      out[currentIx] = out[swapIx];
+      out[swapIx] = temp;
+    }
+
+    return out;
   };
 
 
